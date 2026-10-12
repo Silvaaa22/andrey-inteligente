@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pergunta Importante para Você! 🧠✨</title>
+  
+  <!-- Fontes do Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+      --card-bg: rgba(255, 255, 255, 0.07);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --accent-pink: #ff2a85;
+      --accent-purple: #8b5cf6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --text-primary: #ffffff;
+      --text-secondary: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: var(--text-primary);
+      position: relative;
+    }
+
+    /* Partículas de Fundo */
+    .bg-grid {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
+      z-index: 0;
+    }
+
+    /* Card Principal */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 2.5rem 2rem;
+      width: 90%;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                  0 0 30px rgba(139, 92, 246, 0.2);
+    }
+
+    .avatar-box {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      box-shadow: 0 10px 25px rgba(255, 42, 133, 0.4);
+      animation: pulse 2s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 10px 25px rgba(255, 42, 133, 0.4); }
+      100% { transform: scale(1.06); box-shadow: 0 15px 35px rgba(139, 92, 246, 0.6); }
+    }
+
+    h1 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      line-height: 1.3;
+      background: linear-gradient(to right, #fff, #ddd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    /* Área dos Botões */
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      min-height: 90px;
+      position: relative;
+    }
+
+    .btn {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 0.9rem 2.2rem;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      outline: none;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+      z-index: 2;
+    }
+
+    .btn-yes:hover {
+      transform: scale(1.08);
+      box-shadow: 0 12px 25px rgba(16, 185, 129, 0.6);
+    }
+
+    .btn-no {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+      position: absolute;
+      z-index: 99;
+      transition: left 0.15s ease-out, top 0.15s ease-out, transform 0.15s ease;
+    }
+
+    /* Controles de Áudio */
+    .audio-toggle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+    }
+
+    .audio-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Modal de Vitória */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: linear-gradient(145deg, rgba(30, 27, 75, 0.95), rgba(49, 16, 66, 0.95));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 28px;
+      padding: 2.5rem 2rem;
+      width: 90%;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      transform: scale(0.8);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 2.2rem;
+      color: #f43f5e;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+    }
+
+    .joke-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 18px;
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #f1f5f9;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+      color: white;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.1rem;
+      padding: 0.8rem 1.8rem;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 0.6rem;
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-action:hover {
+      opacity: 0.95;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.2rem; }
+      h1 { font-size: 1.5rem; }
+      .btn { font-size: 1rem; padding: 0.8rem 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <div class="card">
+    <button class="audio-toggle" id="audioToggle" title="Alternar som">🔊</button>
+    
+    <div class="avatar-box">🧠</div>
+    
+    <h1>Você acha que o Andrey é inteligente?</h1>
+    <p class="subtitle" id="subtitle">Responda com total sinceridade... se conseguir! 😉</p>
+
+    <div class="btn-container" id="btnContainer">
+      <button class="btn btn-yes" id="btnYes">SIM! 💡</button>
+      <button class="btn btn-no" id="btnNo">NÃO 😜</button>
+    </div>
+  </div>
+
+  <!-- Modal de Vitória -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">👑</div>
+      <h2 class="modal-title">Eu sempre soube!</h2>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Sua sabedoria é impressionante! Como recompensa, aqui está um fato incontestável:
+      </p>
+
+      <div class="joke-card" id="jokeBox">
+        Carregando piada...
+      </div>
+
+      <button class="btn-action" id="btnNextJoke">Outra Piada! 🤣</button>
+      <button class="btn-action" id="btnClose" style="background: rgba(255,255,255,0.1); margin-top: 0.5rem;">Fechar</button>
+    </div>
+  </div>
+
+  <script>
+    // --- ESTADO DA APLICAÇÃO ---
+    let soundEnabled = true;
+    let dodgeCount = 0;
+
+    const jokes = [
+      "O Andrey é tão inteligente que quando ele erra, o universo revisa as leis da física só para ele estar certo.",
+      "Cientistas estudam o cérebro do Andrey. Até agora descobriram que 50% é genialidade pura e 50% é tática para nunca lavar a louça.",
+      "O Andrey não comete erros de digitação, é a língua portuguesa que ainda não se adaptou ao vocabulário dele.",
+      "Dizem que o QI do Andrey é tão alto que se ele pensar muito forte, o Wi-Fi da vizinhança fica até mais rápido.",
+      "A inteligência do Andrey é igual a um buraco negro: atrai tudo, ninguém entende direito, mas todos respeitam!",
+      "O Andrey só não inventou a viagem no tempo ainda porque está muito ocupado sendo incrível no presente."
+    ];
+
+    const taunts = [
+      "Ops! Quase lá... tenta de novo! 🤪",
+      "Errou feio! O 'Não' não é uma opção válida! 😂",
+      "Nem tenta! O botão de 'Não' tem medo da verdade! ⚡",
+      "Sério? Tentando clicar no 'Não' de novo? 🧐",
+      "Você não vai conseguir jamais! Manda um SIM logo! 🚀",
+      "Desiste! O 'Não' tá mais rápido que seus reflexos! 🔥"
+    ];
+
+    // --- ELEMENTOS DOM ---
+    const btnNo = document.getElementById('btnNo');
+    const btnYes = document.getElementById('btnYes');
+    const subtitle = document.getElementById('subtitle');
+    const audioToggle = document.getElementById('audioToggle');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const jokeBox = document.getElementById('jokeBox');
+    const btnNextJoke = document.getElementById('btnNextJoke');
+    const btnClose = document.getElementById('btnClose');
+    const btnContainer = document.getElementById('btnContainer');
+
+    // --- GERADOR DE ÁUDIO (Web Audio API) ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'dodge') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.12);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+        osc.start(now);
+        osc.stop(now + 0.12);
+      } else if (type === 'win') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(261.63, now); // C4
+        osc.frequency.setValueAtTime(329.63, now + 0.1); // E4
+        osc.frequency.setValueAtTime(392.00, now + 0.2); // G4
+        osc.frequency.setValueAtTime(523.25, now + 0.3); // C5
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+        osc.start(now);
+        osc.stop(now + 0.6);
+      }
+    }
+
+    // Toggle de Áudio
+    audioToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      audioToggle.textContent = soundEnabled ? '🔊' : '🔇';
+    });
+
+    // --- LÓGICA DO BOTÃO FUGITIVO ---
+    function dodgeButton() {
+      dodgeCount++;
+      playSound('dodge');
+
+      // Posição aleatória na tela (com margem de segurança)
+      const padding = 20;
+      const btnRect = btnNo.getBoundingClientRect();
+      const maxX = window.innerWidth - btnRect.width - padding;
+      const maxY = window.innerHeight - btnRect.height - padding;
+
+      const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+      const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+      btnNo.style.position = 'fixed';
+      btnNo.style.left = `${randomX}px`;
+      btnNo.style.top = `${randomY}px`;
+
+      // Atualiza frase de provocação
+      const taunt = taunts[Math.floor(Math.random() * taunts.length)];
+      subtitle.textContent = taunt;
+      subtitle.style.color = '#ff79c6';
+
+      // Aumenta o tamanho do botão "SIM" gradualmente
+      const currentScale = 1 + Math.min(dodgeCount * 0.08, 0.6);
+      btnYes.style.transform = `scale(${currentScale})`;
+    }
+
+    // Eventos para Fuga (Desktop + Mobile)
+    btnNo.addEventListener('mouseenter', dodgeButton);
+    btnNo.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      dodgeButton();
+    });
+    btnNo.addEventListener('click', (e) => {
+      e.preventDefault();
+      dodgeButton();
+    });
+
+    // --- LÓGICA DO BOTÃO "SIM" (VITÓRIA) ---
+    btnYes.addEventListener('click', () => {
+      playSound('win');
+
+      // Confete
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+
+      // Exibe Modal
+      getRandomJoke();
+      modalOverlay.classList.add('active');
+    });
+
+    // Alternar Piadas
+    function getRandomJoke() {
+      const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+      jokeBox.textContent = `"${randomJoke}"`;
+    }
+
+    btnNextJoke.addEventListener('click', getRandomJoke);
+
+    // Fechar Modal
+    btnClose.addEventListener('click', () => {
+      modalOverlay.classList.remove('active');
+    });
+
+    // Posicionamento inicial do botão "Não"
+    window.addEventListener('load', () => {
+      const containerRect = btnContainer.getBoundingClientRect();
+      btnNo.style.position = 'relative';
+    });
+  </script>
+</body>
+</html>
